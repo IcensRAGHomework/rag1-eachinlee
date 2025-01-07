@@ -2,8 +2,11 @@ import json
 import traceback
 import re
 
-from model_configurations import get_model_configuration
+from rich import print as pprint
+from langchain.prompts import PromptTemplate
+from langchain_core.output_parsers import JsonOutputParser
 
+from model_configurations import get_model_configuration
 from langchain_openai import AzureChatOpenAI
 from langchain_core.messages import HumanMessage
 
@@ -12,7 +15,14 @@ gpt_config = get_model_configuration(gpt_chat_version)
 
 def generate_hw01(question):
 
-    question = question + "以JSON格式輸出外層為Result:，每筆資料包含date:只需要顯示日期與name:顯示紀念日名稱，以西元年開頭YYYY-MM-DD 格式顯示日期，再換行顯示紀念日名稱，最後不需顯示任何其他注意資訊，"
+    prompt_tmp = PromptTemplate.from_template("以下列格式輸出{format_set}，且注意此條件{condition_set}")
+    prompt_str = prompt_tmp.format(
+    format_set="請生成一個 JSON 物件，包含一個名為 Result的屬性，該屬性下有兩個子屬性： date :YYYY-MM-DD  和 name :紀念日名稱",
+    condition_set="最後不需顯示任何其他資訊")
+
+    question = question + prompt_str
+
+    #question = question + "以JSON格式輸出外層為Result:，每筆資料包含date:只需要顯示日期與name:顯示紀念日名稱，以西元年開頭YYYY-MM-DD 格式顯示日期，再換行顯示紀念日名稱，最後不需顯示任何其他注意資訊，"
     #print(question)
 
     llm = AzureChatOpenAI(
@@ -73,7 +83,7 @@ def demo(question):
 
 #Test generate_hw01
 print("generate_hw01 請回答台灣特定月份的紀念日有哪些(請用JSON格式呈現)?")
-QQ="2024年台灣5月紀念日有哪些?"
+QQ="2024年台灣6月紀念日有哪些?"
 print(QQ)
 RR = generate_hw01(QQ)
 
