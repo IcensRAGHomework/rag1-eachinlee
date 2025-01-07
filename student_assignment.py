@@ -14,7 +14,6 @@ gpt_chat_version = 'gpt-4o'
 gpt_config = get_model_configuration(gpt_chat_version)
 
 def generate_hw01(question):
-
     question = question + "以JSON格式輸出外層為Result:，每筆資料包含date:只需要顯示日期與name:顯示紀念日名稱，以西元年開頭YYYY-MM-DD 格式顯示日期，再換行顯示紀念日名稱，最後不需顯示任何其他注意資訊，"
     #print(question)
 
@@ -33,7 +32,14 @@ def generate_hw01(question):
     )
     response = llm.invoke([message])
 
-    print(response.content)
+    #print response as JSON object
+    #print(response.content)
+
+    #try to apply JsonOutputParser()
+
+    json_parser = JsonOutputParser()
+    json_output = json_parser.invoke(response)
+    print(json_output)
 
     return response
     
