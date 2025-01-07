@@ -3,6 +3,7 @@ import traceback
 import re
 
 from model_configurations import get_model_configuration
+from langchain_core.output_parsers import JsonOutputParser
 
 from langchain_openai import AzureChatOpenAI
 from langchain_core.messages import HumanMessage
@@ -29,8 +30,10 @@ def generate_hw01(question):
             ]
     )
     response = llm.invoke([message])
-
-    print(response.content)
+    
+    json_parser = JsonOutputParser()
+    json_output = json_parser.invoke(response)
+    print(json_output)
 
     return response
     
