@@ -25,7 +25,20 @@ def generate_hw01(question):
     #"""
 
     #Use Demo function to process LLM API
-    response = demo(question)
+    llm = AzureChatOpenAI(
+            model=gpt_config['model_name'],
+            deployment_name=gpt_config['deployment_name'],
+            openai_api_key=gpt_config['api_key'],
+            openai_api_version=gpt_config['api_version'],
+            azure_endpoint=gpt_config['api_base'],
+            temperature=gpt_config['temperature']
+    )
+    message = HumanMessage(
+            content=[
+                {"type": "text", "text": question},
+            ]
+    )
+    response = llm.invoke([message])
 
     #print response as JSON object
     #print(response.content)
@@ -36,7 +49,7 @@ def generate_hw01(question):
     json_output = json_parser.invoke(response)
     print(json_output)
 
-    return response
+    return json_output
     
 
 
