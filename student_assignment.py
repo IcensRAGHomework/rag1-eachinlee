@@ -14,7 +14,6 @@ gpt_chat_version = 'gpt-4o'
 gpt_config = get_model_configuration(gpt_chat_version)
 
 def generate_hw01(question):
-
     #"""
     #Setup Prompt  
     prompt_tmp = PromptTemplate.from_template("以下列格式輸出{format_set}，且注意此條件{condition_set}")
@@ -32,7 +31,6 @@ def generate_hw01(question):
     #print(response.content)
 
     #try to apply JsonOutputParser()
-
 
     json_parser = JsonOutputParser()
     json_output = json_parser.invoke(response)
@@ -76,7 +74,7 @@ def demo(question):
 
 
 
-"""
+#"""
 #Test generate_hw01
 print("generate_hw01 請回答台灣特定月份的紀念日有哪些(請用JSON格式呈現)?")
 QQ="2023年台灣4月紀念日有哪些?"
