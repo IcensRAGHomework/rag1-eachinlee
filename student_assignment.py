@@ -13,7 +13,7 @@ gpt_config = get_model_configuration(gpt_chat_version)
 
 def generate_hw01(question):
 
-    question = question + "以JSON格式輸出外層為Result:，每筆資料包含date:只需要顯示日期與name:顯示紀念日名稱，以西元年開頭YYYY-MM-DD 格式顯示日期，再換行顯示紀念日名稱，最後不需顯示任何其他注意資訊，"
+    question = question + "請生成一個 JSON 物件，不需要顯示json字串，直接包含一個名為 Result的屬性，該屬性下有兩個子屬性： date :YYYY-MM-DD  和 name :紀念日名稱，不需顯示任何其他資訊，"
     #print(question)
 
     llm = AzureChatOpenAI(
@@ -31,11 +31,17 @@ def generate_hw01(question):
     )
     response = llm.invoke([message])
     
-    json_parser = JsonOutputParser()
-    json_output = json_parser.invoke(response)
-    print(json_output)
+    #json_parser = JsonOutputParser()
+    #json_output = json_parser.invoke(response)
+    #print(json_output)
 
-    return json_output
+    json_string = response.content
+
+    print(json_string)
+
+    parsed_data = json.loads(json_string)
+
+    return json_string
     
 
 
@@ -74,10 +80,10 @@ def demo(question):
 
 
 
-#"""
+"""
 #Test generate_hw01
 print("generate_hw01 請回答台灣特定月份的紀念日有哪些(請用JSON格式呈現)?")
-QQ="2025年台灣9月紀念日有哪些?"
+QQ="2024年台灣10月紀念日有哪些?"
 print(QQ)
 RR = generate_hw01(QQ)
 #"""
