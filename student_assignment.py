@@ -36,7 +36,7 @@ def generate_hw01(question):
 
     json_parser = JsonOutputParser()
     json_output = json_parser.invoke(response)
-    #print(json_output)
+    print(json_output)
 
     return json_output
     
