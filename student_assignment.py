@@ -2,11 +2,8 @@ import json
 import traceback
 import re
 
-from rich import print as pprint
-from langchain.prompts import PromptTemplate
-from langchain_core.output_parsers import JsonOutputParser
-
 from model_configurations import get_model_configuration
+
 from langchain_openai import AzureChatOpenAI
 from langchain_core.messages import HumanMessage
 
@@ -36,7 +33,6 @@ def generate_hw01(question):
     print(response.content)
 
     return response
-    
     
 
 
@@ -74,16 +70,12 @@ def demo(question):
 
 
 
-#"""
+
 #Test generate_hw01
 print("generate_hw01 請回答台灣特定月份的紀念日有哪些(請用JSON格式呈現)?")
-QQ="2023年台灣4月紀念日有哪些?"
+QQ="2024年台灣5月紀念日有哪些?"
 print(QQ)
 RR = generate_hw01(QQ)
-#"""
-
-
-
 
 #RR = demo(QQ)
 #print(RR.content)
