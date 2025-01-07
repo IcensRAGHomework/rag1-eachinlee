@@ -35,7 +35,7 @@ def generate_hw01(question):
     json_output = json_parser.invoke(response)
     print(json_output)
 
-    return response
+    return json_output
     
 
 
@@ -74,10 +74,10 @@ def demo(question):
 
 
 
-"""
+#"""
 #Test generate_hw01
 print("generate_hw01 請回答台灣特定月份的紀念日有哪些(請用JSON格式呈現)?")
-QQ="2023年台灣4月紀念日有哪些?"
+QQ="2025年台灣9月紀念日有哪些?"
 print(QQ)
 RR = generate_hw01(QQ)
 #"""
