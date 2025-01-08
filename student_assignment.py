@@ -16,21 +16,8 @@ def generate_hw01(question):
     question = question + "請生成一個 JSON 物件，不需要顯示json字串，直接包含一個名為 Result的屬性，先用[]包住該屬性下有兩個子屬性： date :YYYY-MM-DD  和 name :紀念日名稱，只顯示國慶日，，不需顯示任何其他資訊，"
     #print(question)
 
-    llm = AzureChatOpenAI(
-            model=gpt_config['model_name'],
-            deployment_name=gpt_config['deployment_name'],
-            openai_api_key=gpt_config['api_key'],
-            openai_api_version=gpt_config['api_version'],
-            azure_endpoint=gpt_config['api_base'],
-            temperature=gpt_config['temperature']
-    )
-    message = HumanMessage(
-            content=[
-                {"type": "text", "text": question},
-            ]
-    )
-    response = llm.invoke([message])
-    
+    response = demo(question)
+   
     #json_parser = JsonOutputParser()
     #json_output = json_parser.invoke(response)
     #print(json_output)
@@ -39,7 +26,7 @@ def generate_hw01(question):
 
     print(json_string)
 
-    parsed_data = json.loads(json_string)
+    Valid_json_data = json.loads(json_string)
 
     return json_string
     
