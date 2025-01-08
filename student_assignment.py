@@ -1,6 +1,7 @@
 import json
 import traceback
 import re
+import requests
 
 from model_configurations import get_model_configuration
 from langchain_core.output_parsers import JsonOutputParser
@@ -22,18 +23,55 @@ def generate_hw01(question):
     #json_output = json_parser.invoke(response)
     #print(json_output)
 
-    json_string = response.content
+    HW01_jstr = response.content
 
-    print(json_string)
+    #print(HW01_jstr)
 
-    Valid_json_data = json.loads(json_string)
+    Valid_json_data = json.loads(HW01_jstr)
 
-    return json_string
+    return HW01_jstr
     
 
-
 def generate_hw02(question):
-    pass
+    question = question + "請生成一個 JSON 物件，不需要顯示'''json字串，直接包含兩個屬性： year :西元年和 month :月份，不需顯示任何其他資訊，"
+    #print(question)
+    response = demo(question)
+    HW02_jstr = response.content
+    #print(HW02_jstr)
+
+    #json.loads() form & Set year & month
+    data = json.loads(HW02_jstr)
+    year = data['year']
+    month = data['month']
+    #print(f"年份: {year}")
+    #print(f"月份: {month}")
+
+    #set Calendarific API Key & country
+    api_key = "sBWjJUOnRNi26kc6d9w3HYlWSsLW9gy8"
+    country = "TW"
+
+    #set Calendarific API Requset
+    url = f"https://calendarific.com/api/v2/holidays?api_key={api_key}&country={country}&year={year}&month={month}"
+
+    #send Req to Calendarific
+    response = requests.get(url)
+    data = response.json()
+
+    #handle Response Data to json
+    result_json_string = []
+    for holiday in data['response']['holidays']:
+        result_json_string.append({
+            "date": holiday['date']['iso'],
+            "name": holiday['name']
+        })
+
+    #json dump format
+    result_json_string = json.dumps({"Result": result_json_string}, ensure_ascii=False, indent=4)
+
+    #print(result_json_string)
+    
+    return result_json_string
+
     
 def generate_hw03(question2, question3):
     pass
@@ -66,13 +104,20 @@ def demo(question):
 
 
 
-
-#"""
+"""
 #Test generate_hw01
 print("generate_hw01 請回答台灣特定月份的紀念日有哪些(請用JSON格式呈現)?")
 QQ="2024年台灣10月紀念日有哪些?"
 print(QQ)
 RR = generate_hw01(QQ)
+#"""
+
+"""
+#Test generate_hw01
+print("generate_hw02 請回答台灣特定月份的紀念日有哪些(請用API Call)?")
+QQ="2024年台灣10月紀念日有哪些?"
+print(QQ)
+RR = generate_hw02(QQ)
 #"""
 
 #RR = demo(QQ)
