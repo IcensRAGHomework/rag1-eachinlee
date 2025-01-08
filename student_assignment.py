@@ -104,7 +104,7 @@ def demo(question):
 
 
 
-"""
+#"""
 #Test generate_hw01
 print("generate_hw01 請回答台灣特定月份的紀念日有哪些(請用JSON格式呈現)?")
 QQ="2024年台灣10月紀念日有哪些?"
@@ -112,7 +112,7 @@ print(QQ)
 RR = generate_hw01(QQ)
 #"""
 
-"""
+#"""
 #Test generate_hw01
 print("generate_hw02 請回答台灣特定月份的紀念日有哪些(請用API Call)?")
 QQ="2024年台灣10月紀念日有哪些?"
