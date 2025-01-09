@@ -2,12 +2,22 @@ import json
 import traceback
 import re
 import requests
+import base64
+import os
+from PIL import Image
 
-from model_configurations import get_model_configuration
+from langchain.chat_models import AzureChatOpenAI
+from langchain.prompts import PromptTemplate
+from langchain.chains import LLMChain
 from langchain_core.output_parsers import JsonOutputParser
-
 from langchain_openai import AzureChatOpenAI
 from langchain_core.messages import HumanMessage
+from langchain.llms import OpenAI
+from langchain.memory import ConversationBufferMemory
+from mimetypes import guess_type
+from model_configurations import get_model_configuration
+from pytesseract import image_to_string
+
 
 gpt_chat_version = 'gpt-4o'
 gpt_config = get_model_configuration(gpt_chat_version)
