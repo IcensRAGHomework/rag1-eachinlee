@@ -3,20 +3,12 @@ import traceback
 import re
 import requests
 import base64
-import os
-from PIL import Image
 
-from langchain.chat_models import AzureChatOpenAI
-from langchain.prompts import PromptTemplate
-from langchain.chains import LLMChain
+from model_configurations import get_model_configuration
 from langchain_core.output_parsers import JsonOutputParser
+
 from langchain_openai import AzureChatOpenAI
 from langchain_core.messages import HumanMessage
-from langchain.llms import OpenAI
-from langchain.memory import ConversationBufferMemory
-from mimetypes import guess_type
-from model_configurations import get_model_configuration
-from pytesseract import image_to_string
 
 gpt_chat_version = 'gpt-4o'
 gpt_config = get_model_configuration(gpt_chat_version)
@@ -83,8 +75,8 @@ def generate_hw02(question):
 
     
 def generate_hw03(question2, question3):
-    return 1
-
+    pass
+    
 def generate_hw04(question):
 
     # 1. 讀取圖片並轉換為 Base64 編碼
@@ -132,7 +124,7 @@ def generate_hw04(question):
     #print(prompt_str)
 
     HW04_jstr = response.content
-    print(HW04_jstr)
+    #print(HW04_jstr)
 
     return HW04_jstr
     
@@ -185,7 +177,7 @@ print(QQ3)
 RR = generate_hw03(QQ2,QQ3)
 #"""
 
-#"""
+"""
 #Test generate_hw04
 print("generate_hw04 請回答?")
 QQ4="請問日本隊的積分是多少"
@@ -195,4 +187,3 @@ RR = generate_hw04(QQ4)
 
 #RR = demo(QQ)
 #print(RR.content)
-
