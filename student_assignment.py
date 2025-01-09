@@ -3,6 +3,7 @@ import traceback
 import re
 import requests
 import base64
+import os
 
 from model_configurations import get_model_configuration
 from langchain_core.output_parsers import JsonOutputParser
