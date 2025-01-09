@@ -3,25 +3,11 @@ import traceback
 import re
 import requests
 
-import os
-from PIL import Image
-from langchain.chat_models import AzureChatOpenAI
-from langchain.prompts import PromptTemplate
-from langchain.chains import LLMChain
-from pytesseract import image_to_string
-
 from model_configurations import get_model_configuration
 from langchain_core.output_parsers import JsonOutputParser
 
 from langchain_openai import AzureChatOpenAI
 from langchain_core.messages import HumanMessage
-
-from langchain.llms import OpenAI
-from langchain.chains import LLMChain
-from langchain.memory import ConversationBufferMemory
-
-import base64
-from mimetypes import guess_type
 
 gpt_chat_version = 'gpt-4o'
 gpt_config = get_model_configuration(gpt_chat_version)
@@ -88,59 +74,10 @@ def generate_hw02(question):
 
     
 def generate_hw03(question2, question3):
+    pass
     
-    return 1
-
 def generate_hw04(question):
-
-    # 1. 讀取圖片並轉換為 Base64 編碼
-    filename = "baseball.png"
-    current_directory = os.path.dirname(os.path.abspath(__file__))
-    image_path = os.path.join(current_directory, filename)
-
-    # 檢查圖片檔案是否存在
-    if not os.path.exists(image_path):
-        raise FileNotFoundError(f"檔案 {filename} 不存在於目錄 {current_directory}")
-
-    # 讀取圖片並將其轉換為 Base64 編碼
-    with open(image_path, "rb") as image_file:
-        image_data = image_file.read()
-        base64_encoded = base64.b64encode(image_data).decode('utf-8')
-
-    # 生成 Data URL（假設圖片是 PNG 格式）
-    data_url = f"data:image/png;base64,{base64_encoded}"
-
-    llm = AzureChatOpenAI(
-            model=gpt_config['model_name'],
-            deployment_name=gpt_config['deployment_name'],
-            openai_api_key=gpt_config['api_key'],
-            openai_api_version=gpt_config['api_version'],
-            azure_endpoint=gpt_config['api_base'],
-            temperature=gpt_config['temperature']
-    )
-    prompt_template = """ 請生成一個 JSON 物件格式，不需要顯示'''json字串，直接(不要加```json):
-     {
-         "Result":
-             {
-                 "score": 0000
-             }
-     }
-    """
-    messages=[
-            { "role": "system", "content": prompt_template },
-            { "role": "user", "content": [
-                { "type": "text", "text": question },
-                { "type": "image_url", "image_url": {"url": data_url } }
-            ] }
-            ]
-
-    response = llm.invoke(messages)
-    #print(prompt_str)
-
-    HW04_jstr = response.content
-    #print(HW04_jstr)
-
-    return HW04_jstr
+    pass
     
 def demo(question):
 
@@ -165,7 +102,9 @@ def demo(question):
 
 
 
-"""
+
+
+#"""
 #Test generate_hw01
 print("generate_hw01 請回答台灣特定月份的紀念日有哪些(請用JSON格式呈現)?")
 QQ="2024年台灣10月紀念日有哪些?"
@@ -173,30 +112,12 @@ print(QQ)
 RR = generate_hw01(QQ)
 #"""
 
-"""
-#Test generate_hw02
+#"""
+#Test generate_hw01
 print("generate_hw02 請回答台灣特定月份的紀念日有哪些(請用API Call)?")
 QQ="2024年台灣10月紀念日有哪些?"
 print(QQ)
 RR = generate_hw02(QQ)
-#"""
-
-"""
-#Test generate_hw03
-print("generate_hw03 請回答?")
-QQ2="2024年台灣10月紀念日有哪些?"
-QQ3='''根據先前的節日清單，這個節日{"date": "10-31", "name": "蔣公誕辰紀念日"}是否有在該月份清單？'''
-print(QQ2)
-print(QQ3)
-RR = generate_hw03(QQ2,QQ3)
-#"""
-
-"""
-#Test generate_hw04
-print("generate_hw04 請回答?")
-QQ4="請問日本隊的積分是多少"
-print(QQ4)
-RR = generate_hw04(QQ4)
 #"""
 
 #RR = demo(QQ)
