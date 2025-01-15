@@ -11,19 +11,49 @@ from langchain_core.output_parsers import JsonOutputParser
 from langchain_openai import AzureChatOpenAI
 from langchain_core.messages import HumanMessage
 
+from langchain.memory import ConversationBufferMemory
+
+
 gpt_chat_version = 'gpt-4o'
 gpt_config = get_model_configuration(gpt_chat_version)
 
+def setllm():
+
+    llm = AzureChatOpenAI(
+            model=gpt_config['model_name'],
+            deployment_name=gpt_config['deployment_name'],
+            openai_api_key=gpt_config['api_key'],
+            openai_api_version=gpt_config['api_version'],
+            azure_endpoint=gpt_config['api_base'],
+            temperature=gpt_config['temperature']
+    )
+
+    return llm
+
+
 def generate_hw01(question):
 
-    question = question + "請生成一個 JSON 物件，不需要顯示json字串，直接包含一個名為 Result的屬性，先用[]包住該屬性下有兩個子屬性： date :YYYY-MM-DD  和 name :紀念日名稱，只顯示國慶日，，不需顯示任何其他資訊，"
-    #print(question)
+    prompt_template = """ Please generate a JSON object format. Please do not need to display the '''json string. The direct output format is as follows example
+    {
+        "Result": [
+            {
+                "date": "2024-10-10",
+                "name": "國慶日"
+            }
+        ]
+    }
+    """
 
-    response = demo(question)
-   
-    #json_parser = JsonOutputParser()
-    #json_output = json_parser.invoke(response)
-    #print(json_output)
+    llm = setllm()
+
+    messages=[
+            { "role": "system", "content": prompt_template },
+            { "role": "user", "content": [
+                { "type": "text", "text": question },
+            ] }
+            ]
+
+    response = llm.invoke(messages)
 
     HW01_jstr = response.content
 
@@ -35,14 +65,31 @@ def generate_hw01(question):
     
 
 def generate_hw02(question):
-    question = question + "請生成一個 JSON 物件，不需要顯示'''json字串，直接包含兩個屬性： year :西元年和 month :月份，不需顯示任何其他資訊，"
-    #print(question)
-    response = demo(question)
+
+    prompt_template = """ Please get Year & month from message and generate a JSON object format. Please do not need to display the '''json string. The direct output format is as follows example
+    {
+        "year": "YYYY",
+        "month": "MM"
+    }
+    """
+    llm = setllm()
+
+    messages=[
+            { "role": "system", "content": prompt_template },
+            { "role": "user", "content": [
+                { "type": "text", "text": question },
+            ] }
+            ]
+
+    response = llm.invoke(messages)
+
     HW02_jstr = response.content
     #print(HW02_jstr)
 
     #json.loads() form & Set year & month
     data = json.loads(HW02_jstr)
+    #print(data)
+
     year = data['year']
     month = data['month']
     #print(f"年份: {year}")
@@ -76,6 +123,39 @@ def generate_hw02(question):
 
     
 def generate_hw03(question2, question3):
+
+    prompt_template = """ Please generate a JSON object format. Please do not need to display the '''json string. The direct output format is as follows example
+    {
+        "Result": [
+            {
+                "date": "YYYY-MM-DD",
+                "name": "Day Name"
+            }
+        ]
+    }
+    """
+
+    llm = setllm()
+
+    Q2C_Str = "請幫我翻譯，並記得這這節日清單Name的中文" + generate_hw02(question2)
+
+    messages=[
+            { "role": "system", "content": prompt_template },
+            { "role": "user", "content": [
+                { "type": "text", "text": Q2C_Str },
+            ] }
+            ]
+
+    response = llm.invoke(messages)
+
+    holiday_list_JStr = response.content
+    print(holiday_list_JStr)
+
+    Valid_json_data = json.loads(holiday_list_JStr)
+
+    #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+    print("======================================================")
+  
     pass
     
 def generate_hw04(question):
@@ -125,9 +205,10 @@ def generate_hw04(question):
     #print(prompt_str)
 
     HW04_jstr = response.content
-    #print(HW04_jstr)
+    print(HW04_jstr)
 
     return HW04_jstr
+
     
 def demo(question):
 
@@ -181,7 +262,7 @@ RR = generate_hw03(QQ2,QQ3)
 """
 #Test generate_hw04
 print("generate_hw04 請回答?")
-QQ4="請問日本隊的積分是多少"
+QQ4="請問USA的積分是多少"
 print(QQ4)
 RR = generate_hw04(QQ4)
 #"""
