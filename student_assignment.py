@@ -222,7 +222,8 @@ def generate_hw03(question2, question3):
     )
     print(res_final_result.content)
     
-    HW03_jstr = response.content
+    HW03_jstr = res_final_result.content
+
     return HW03_jstr
     
 def generate_hw04(question):
