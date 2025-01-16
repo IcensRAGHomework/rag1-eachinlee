@@ -5,14 +5,21 @@ import requests
 import base64
 import os
 
+
 from model_configurations import get_model_configuration
 from langchain_core.output_parsers import JsonOutputParser
 
 from langchain_openai import AzureChatOpenAI
 from langchain_core.messages import HumanMessage
 
+from typing import List
+from pydantic import BaseModel, Field
 from langchain.memory import ConversationBufferMemory
-
+from langchain_core.runnables.history import RunnableWithMessageHistory
+from langchain_core.chat_history import BaseChatMessageHistory
+from langchain_core.messages import HumanMessage, BaseMessage, AIMessage, SystemMessage
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+store = {}
 
 gpt_chat_version = 'gpt-4o'
 gpt_config = get_model_configuration(gpt_chat_version)
@@ -121,6 +128,23 @@ def generate_hw02(question):
     
     return result_json_string
 
+# Ref https://python.langchain.com/docs/how_to/agent_executor/
+class InMemoryHistory(BaseChatMessageHistory, BaseModel):
+    """In memory implementation of chat message history."""
+
+    messages: List[BaseMessage] = Field(default_factory=list)
+
+    def add_messages(self, messages: List[BaseMessage]) -> None:
+        """Add a list of messages to the store"""
+        self.messages.extend(messages)
+
+    def clear(self) -> None:
+        self.messages = []
+    
+def get_session_history(session_id: str) -> BaseChatMessageHistory:
+    if session_id not in store:
+        store[session_id] = InMemoryHistory()
+    return store[session_id]
     
 def generate_hw03(question2, question3):
 
@@ -155,8 +179,51 @@ def generate_hw03(question2, question3):
 
     #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
     print("======================================================")
-  
-    pass
+    #Ref CH4 Page 4-6
+    prompt = ChatPromptTemplate.from_messages([
+        ("system", "Checks whether a holiday is included in the list of holidays for that month, and responds whether the holiday needs to be added or not"),
+        ("ai", "{holiday_list}"),
+        MessagesPlaceholder(variable_name="history"),
+        ("human", "{question}"),
+    ])
+
+    chain = prompt | llm
+
+    chain_with_history = RunnableWithMessageHistory(
+        chain,
+        get_session_history,
+        input_messages_key="question",
+        history_messages_key="history",
+    )
+
+    res_check_holiday = chain_with_history.invoke(
+        {"holiday_list": Valid_json_data, 
+         "question": question3},
+        config={"configurable": {"session_id": "HW3"}}
+    )
+    print(res_check_holiday.content)
+
+    prompt_final = """ 請幫忙根據前面結果，輸出一個JSON物件，do not need to display the '''json string，結果Result包含
+    add : 這是一個布林值，表示是否需要將節日新增到節日清單中。根據問題判斷該節日是否存在於清單中，如果不存在，則為 true；否則為 false。
+    reason : 描述為什麼需要或不需要新增節日，具體說明是否該節日已經存在於清單中，以及若需要將節日新增到節日清單中，增加後清單的內容。
+    整個 JSON 格式範例範例如下：
+    {
+    "Result": 
+        {
+            "add": true,
+            "reason": "蔣中正誕辰紀念日並未包含在十月的節日清單中。目前十月的現有節日包括國慶日、重陽節、華僑節、台灣光復節和萬聖節。因此，如果該日被認定為節日，應該將其新增至清單中。"
+        }
+    }
+    """
+    res_final_result = chain_with_history.invoke(
+        {"holiday_list": Valid_json_data, 
+         "question": prompt_final},
+        config={"configurable": {"session_id": "HW3"}}
+    )
+    print(res_final_result.content)
+    
+    HW03_jstr = response.content
+    return HW03_jstr
     
 def generate_hw04(question):
 
@@ -249,7 +316,7 @@ print(QQ)
 RR = generate_hw02(QQ)
 #"""
 
-"""
+#"""
 #Test generate_hw03
 print("generate_hw03 請回答?")
 QQ2="2024年台灣10月紀念日有哪些?"
